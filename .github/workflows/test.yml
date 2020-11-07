@@ -12,12 +12,12 @@ jobs:
         image: postgres:13-alpine
         env:
           POSTGRES_USER: chefs_collective
+          POSTGRES_PASSWORD: password
           POSTGRES_DB: chefs_collective_test
-          POSTGRES_PASSWORD: ""
         ports:
           - 5432:5432
         # needed because the postgres container does not provide a healthcheck
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 10
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
       - name: Checkout repository
@@ -57,7 +57,7 @@ jobs:
         env:
           RAILS_ENV: test
           PGHOST: localhost
-          PGUSER: myapp
+          PGUSER: chefs_collective
         run: |
           bundle exec rails db:setup
       - name: Run tests
