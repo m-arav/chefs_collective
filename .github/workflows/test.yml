@@ -10,9 +10,6 @@ jobs:
     services:
       postgres:
         image: postgres:13-alpine
-        env:
-          POSTGRES_USER: chefs_collective
-          POSTGRES_PASSWORD: password
         ports:
           - 5432:5432
         # needed because the postgres container does not provide a healthcheck
@@ -54,13 +51,10 @@ jobs:
         run: yarn --frozen-lockfile
       - name: Setup test database
         env:
+          DATABASE_URL: postgres://postgres:@localhost:5432/test
           RAILS_ENV: test
-          PGHOST: localhost
-          POSTGRES_USER: chefs_collective
-          POSTGRES_PASSWORD: password
-          PGPORT: ${{ job.services.postgres.ports[5432] }}
+          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
         run: |
-          bundle exec rails db:create RAILS_ENV=test
-          bundle exec rails db:migrate RAILS_ENV=test
+          bundle exec rails db:prepare
       - name: Run tests
         run: bundle exec rspec
